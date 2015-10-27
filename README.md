@@ -5,7 +5,7 @@ Please
 
 Simple console utility to combine miltiple package managers at one.
 
-See more at http://mitallast.github.io/please/
+See more at https://mitallast.github.io/please/
 
 How to build
 ============
