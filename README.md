@@ -20,5 +20,5 @@ Warning: python-2.7.10_2 already installed
 Credits
 =======
 
-Alexey Korchevsky @mitallast
-@samosad
+- Alexey Korchevsky @mitallast
+- Alexey Tabakman @samosad
