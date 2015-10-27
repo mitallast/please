@@ -4,3 +4,6 @@ go:
     - 1.5.1
     - release
     - tip
+
+script:
+    - go test -v ./...
