@@ -1,6 +1,8 @@
 Please
 ======
 
+[![Build Status](https://travis-ci.org/mitallast/please.svg)](https://travis-ci.org/mitallast/please)
+
 Simple console utility to combine miltiple package managers at one.
 
 How to build
