@@ -5,4 +5,5 @@ go:
   - 1.5.1
 
 script:
+  - brew search vim
   - go test -v ./...

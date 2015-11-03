@@ -27,7 +27,7 @@ func (p *BrewProvider) Search(arg ...string) ([]string, error) {
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		line := scanner.Text()
-		log.Print(line)
+		log.Printf("found: %s", line)
 		lines = append(lines, line)
 	}
 	if scanner.Err() != nil {
