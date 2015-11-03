@@ -6,8 +6,8 @@ import (
 )
 
 func TestSearch(t *testing.T) {
-	provider := newBrewProvider()
-	lines, err := provider.search("vim")
+	provider := NewBrewProvider()
+	lines, err := provider.Search("vim")
 	if err != nil {
 		log.Fatal(err)
 	} else {
