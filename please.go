@@ -22,9 +22,11 @@ func main() {
 		case "install":
 			install()
 			break
+		case "contains":
+			contains()
+			break
 		}
 	}
-
 }
 
 func providers() []provider.Provider {
@@ -46,6 +48,19 @@ func search() {
 	}
 }
 
+func contains() {
+	for _, provider := range providers() {
+		founds, err := provider.Contains(os.Args[2:]...)
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			for _, found := range founds {
+				log.Printf("contains: %s", found)
+			}
+		}
+	}
+}
+
 func install() {
 	for _, provider := range providers() {
 		founds, err := provider.Install(os.Args[2:]...)
@@ -53,7 +68,7 @@ func install() {
 			log.Fatal(err)
 		} else {
 			for _, found := range founds {
-				log.Printf("found: %s", found)
+				log.Printf("install: %s", found)
 			}
 		}
 	}
@@ -62,5 +77,6 @@ func install() {
 func help() {
 	log.Println("Example usage:")
 	log.Println("  please search [PACKAGE...]")
+	log.Println("  please contains [PACKAGE...]")
 	log.Println("  please install [PACKAGE...]")
 }
