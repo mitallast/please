@@ -19,17 +19,36 @@ func main() {
 		case "search":
 			search()
 			break
+		case "install":
+			install()
+			break
 		}
 	}
 
 }
 
-func search() {
-	providers := []provider.Provider{
+func providers() []provider.Provider {
+	return []provider.Provider{
 		brew.NewBrewProvider(),
 	}
-	for _, provider := range providers {
+}
+
+func search() {
+	for _, provider := range providers() {
 		founds, err := provider.Search(os.Args[2:]...)
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			for _, found := range founds {
+				log.Printf("found: %s", found)
+			}
+		}
+	}
+}
+
+func install() {
+	for _, provider := range providers() {
+		founds, err := provider.Install(os.Args[2:]...)
 		if err != nil {
 			log.Fatal(err)
 		} else {
@@ -43,4 +62,5 @@ func search() {
 func help() {
 	log.Println("Example usage:")
 	log.Println("  please search [PACKAGE...]")
+	log.Println("  please install [PACKAGE...]")
 }

@@ -3,7 +3,6 @@ package provider
 import (
 	"github.com/stretchr/testify/mock"
 	"testing"
-	"log"
 )
 
 type MockProvider struct {
@@ -30,9 +29,9 @@ func TestSearch(t *testing.T) {
 	provider.Mock.On("Search", []string{"vim"}).Return([]string{}, nil)
 	lines, err := provider.Search("vim")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	} else {
-		log.Printf("lines: %s", lines)
+		t.Logf("lines: %s", lines)
 	}
 }
 
@@ -42,8 +41,8 @@ func TestInstall(t *testing.T) {
 	provider.Mock.On("Install", []string{"vim"}).Return([]string{}, nil)
 	lines, err := provider.Install("vim")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	} else {
-		log.Printf("lines: %s", lines)
+		t.Logf("lines: %s", lines)
 	}
 }

@@ -1,16 +1,25 @@
 package brew
 
 import (
-	"log"
 	"testing"
 )
 
 func TestSearch(t *testing.T) {
 	provider := NewBrewProvider()
-	lines, err := provider.Search("vim")
+	lines, err := provider.Search("python")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	} else {
-		log.Printf("lines: %s", lines)
+		t.Logf("lines: %s", lines)
+	}
+}
+
+func TestInstall(t *testing.T) {
+	provider := NewBrewProvider()
+	lines, err := provider.Install("python")
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		t.Logf("lines: %s", lines)
 	}
 }
