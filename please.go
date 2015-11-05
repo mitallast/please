@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/codegangsta/cli"
 	"github.com/mitallast/please/brew"
 	"github.com/mitallast/please/provider"
 	"log"
@@ -9,24 +10,30 @@ import (
 
 func main() {
 	log.SetFlags(0)
-
-	switch len(os.Args) {
-	case 1:
-		help()
-		return
-	default:
-		switch os.Args[1] {
-		case "search":
-			search()
-			break
-		case "install":
-			install()
-			break
-		case "contains":
-			contains()
-			break
-		}
+	app := cli.NewApp()
+	app.Name = "please"
+	app.Usage = "Polite packet manager"
+	app.Commands = []cli.Command{
+		{
+			Name:    "search",
+			Aliases: []string{"s"},
+			Usage:   "[PACKAGE...]",
+			Action:  search,
+		},
+		{
+			Name:    "contains",
+			Aliases: []string{"c"},
+			Usage:   "[PACKAGE...]",
+			Action:  contains,
+		},
+		{
+			Name:    "install",
+			Aliases: []string{"i"},
+			Usage:   "[PACKAGE...]",
+			Action:  install,
+		},
 	}
+	app.Run(os.Args)
 }
 
 func providers() []provider.Provider {
@@ -35,9 +42,9 @@ func providers() []provider.Provider {
 	}
 }
 
-func search() {
+func search(c *cli.Context) {
 	for _, provider := range providers() {
-		founds, err := provider.Search(os.Args[2:]...)
+		founds, err := provider.Search(c.Args()...)
 		if err != nil {
 			log.Fatal(err)
 		} else {
@@ -48,9 +55,9 @@ func search() {
 	}
 }
 
-func contains() {
+func contains(c *cli.Context) {
 	for _, provider := range providers() {
-		founds, err := provider.Contains(os.Args[2:]...)
+		founds, err := provider.Contains(c.Args()...)
 		if err != nil {
 			log.Fatal(err)
 		} else {
@@ -61,9 +68,9 @@ func contains() {
 	}
 }
 
-func install() {
+func install(c *cli.Context) {
 	for _, provider := range providers() {
-		founds, err := provider.Install(os.Args[2:]...)
+		founds, err := provider.Install(c.Args()...)
 		if err != nil {
 			log.Fatal(err)
 		} else {
@@ -72,11 +79,4 @@ func install() {
 			}
 		}
 	}
-}
-
-func help() {
-	log.Println("Example usage:")
-	log.Println("  please search [PACKAGE...]")
-	log.Println("  please contains [PACKAGE...]")
-	log.Println("  please install [PACKAGE...]")
 }
