@@ -7,6 +7,12 @@ Simple console utility to combine miltiple package managers at one.
 
 See more at https://mitallast.github.io/please/
 
+Supported package managers
+==========================
+
+- homebrew
+- npm
+
 How to build
 ============
 

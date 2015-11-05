@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/codegangsta/cli"
 	"github.com/mitallast/please/brew"
+	"github.com/mitallast/please/npm"
 	"github.com/mitallast/please/provider"
 	"log"
 	"os"
@@ -39,6 +40,7 @@ func main() {
 func providers() []provider.Provider {
 	return []provider.Provider{
 		brew.NewBrewProvider(),
+		npm.NewNpmProvider(),
 	}
 }
 
@@ -69,14 +71,42 @@ func contains(c *cli.Context) {
 }
 
 func install(c *cli.Context) {
+	packages := append([]string{}, c.Args()...)
 	for _, provider := range providers() {
-		founds, err := provider.Install(c.Args()...)
+		contains, err := provider.Contains(packages...)
 		if err != nil {
 			log.Fatal(err)
-		} else {
-			for _, found := range founds {
+		}
+		log.Printf("contains: %s", contains)
+		if len(contains) > 0 {
+			packages = excludePackages(packages, contains)
+			lines, err := provider.Install(contains...)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, found := range lines {
 				log.Printf("install: %s", found)
 			}
 		}
 	}
+}
+
+func excludePackages(packages []string, exclude []string) []string {
+	list := []string{}
+	for _, pkg := range packages {
+		contains := containsPackage(exclude, pkg)
+		if !contains {
+			list = append(list, pkg)
+		}
+	}
+	return list
+}
+
+func containsPackage(packages []string, pkg string) bool {
+	for _, p := range packages {
+		if p == pkg {
+			return true
+		}
+	}
+	return false
 }
