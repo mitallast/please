@@ -5,5 +5,6 @@ go:
   - 1.5.1
 
 script:
-  - brew search vim
+  - brew install npm
+  - npm search travis-ci
   - go test -v ./...
