@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 	"encoding/json"
+	"path/filepath"
 )
 
 type NpmProvider struct {
@@ -28,8 +29,7 @@ func (p *NpmProvider) Search(arg ...string) ([]string, error) {
 		return matches, err
 	}
 
-	packagesFile := cache + "/registry.npmjs.org/-/all/.cache.json"
-	log.Println("[npm] path to cache ", packagesFile)
+	packagesFile := filepath.Join(cache, "registry.npmjs.org/-/all/.cache.json");
 	file, err := os.Open(packagesFile)
 	if err != nil {
 		return matches, err
@@ -81,7 +81,7 @@ func (p *NpmProvider) Contains(arg ...string) ([]string, error) {
 		return matches, err
 	}
 
-	packagesFile := cache + "/registry.npmjs.org/-/all/.cache.json"
+	packagesFile := filepath.Join(cache, "registry.npmjs.org/-/all/.cache.json");
 	log.Println("[npm] path to cache ", packagesFile)
 	file, err := os.Open(packagesFile)
 	if err != nil {
