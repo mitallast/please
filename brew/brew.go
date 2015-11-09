@@ -10,6 +10,11 @@ import (
 type BrewProvider struct {
 }
 
+func Supports() bool {
+	_, err := exec.LookPath("brew")
+	return err == nil
+}
+
 func NewBrewProvider() *BrewProvider {
 	return &BrewProvider{}
 }

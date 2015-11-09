@@ -4,7 +4,18 @@ import (
 	"testing"
 )
 
+func TestSupports(t *testing.T) {
+	if Supports() {
+		t.Log("brew supports")
+	} else {
+		t.Skip("brew not supports")
+	}
+}
+
 func TestSearch(t *testing.T) {
+	if !Supports() {
+		t.Skip("brew not supports")
+	}
 	provider := NewBrewProvider()
 	lines, err := provider.Search("python")
 	if err != nil {
@@ -15,6 +26,9 @@ func TestSearch(t *testing.T) {
 }
 
 func TestContains(t *testing.T) {
+	if !Supports() {
+		t.Skip("brew not supports")
+	}
 	provider := NewBrewProvider()
 	contains, err := provider.Contains("python")
 	if err != nil {
@@ -25,6 +39,9 @@ func TestContains(t *testing.T) {
 }
 
 func TestInstall(t *testing.T) {
+	if !Supports() {
+		t.Skip("brew not supports")
+	}
 	provider := NewBrewProvider()
 	lines, err := provider.Install("python")
 	if err != nil {
