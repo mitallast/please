@@ -38,10 +38,14 @@ func main() {
 }
 
 func providers() []provider.Provider {
-	return []provider.Provider{
-		brew.NewBrewProvider(),
-		npm.NewNpmProvider(),
+	providers := []provider.Provider{}
+	if brew.Supports() {
+		providers = append(providers, brew.NewBrewProvider())
 	}
+	if npm.Supports() {
+		providers = append(providers, npm.NewNpmProvider())
+	}
+	return providers
 }
 
 func search(c *cli.Context) {
