@@ -38,15 +38,15 @@ func TestContains(t *testing.T) {
 	}
 }
 
-func testInstall(t *testing.T) {
+func TestInstall(t *testing.T) {
 	if !Supports() {
 		t.Skip("npm not supports")
 	}
 	provider := NewProvider()
-	lines, err := provider.Install("jquery-sortable")
+	err := provider.Install("jquery-sortable")
 	if err != nil {
 		t.Fatal(err)
 	} else {
-		t.Logf("install: %s", lines)
+		t.Logf("installed")
 	}
 }

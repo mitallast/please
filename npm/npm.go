@@ -3,9 +3,9 @@ package npm
 import (
 	"bufio"
 	"encoding/json"
+	"github.com/mitallast/please/cmd"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -14,13 +14,11 @@ type NpmProvider struct {
 }
 
 type NpmPackage struct {
-	Name        string
-	description string
+	Name string
 }
 
 func Supports() bool {
-	_, err := exec.LookPath("npm")
-	return err == nil
+	return cmd.LookPath("npm")
 }
 
 func NewProvider() *NpmProvider {
@@ -30,7 +28,7 @@ func NewProvider() *NpmProvider {
 func (p *NpmProvider) Search(arg ...string) ([]string, error) {
 	cache, err := p.getCache()
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
 
 	packagesFile := filepath.Join(cache, "registry.npmjs.org/-/all/.cache.json")
@@ -40,7 +38,7 @@ func (p *NpmProvider) Search(arg ...string) ([]string, error) {
 		if os.IsNotExist(err) {
 			return searchNpm(arg...)
 		} else {
-			return []string{}, err
+			return nil, err
 		}
 	} else {
 		defer file.Close()
@@ -69,10 +67,10 @@ func searchJson(file *os.File, arg ...string) ([]string, error) {
 		if err == nil {
 			for _, search := range arg {
 				if search == npmPackage.Name {
-					log.Printf("found: %s\n", npmPackage.Name)
+					log.Printf("[npm] %s\n", npmPackage.Name)
 					matches = append([]string{npmPackage.Name}, matches...)
 				} else if strings.Contains(npmPackage.Name, search) {
-					log.Printf("found: %s\n", npmPackage.Name)
+					log.Printf("[npm] %s\n", npmPackage.Name)
 					matches = append(matches, npmPackage.Name)
 				}
 			}
@@ -88,22 +86,13 @@ func searchJson(file *os.File, arg ...string) ([]string, error) {
 }
 
 func searchNpm(arg ...string) ([]string, error) {
-	cmd := exec.Command("npm", append([]string{"--no-color", "search"}, arg...)...)
-	log.Printf("execute: %v", cmd.Args)
-	matches := []string{}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return matches, err
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return matches, err
-	}
+	cmd := cmd.Command("npm", append([]string{"--no-color", "search"}, arg...)...)
 	if err := cmd.Start(); err != nil {
-		return matches, err
+		return nil, err
 	}
-	//	stdout
-	scanner := bufio.NewScanner(stdout)
+	defer cmd.Wait()
+	matches := []string{}
+	scanner := cmd.Scanner()
 	for scanner.Scan() {
 		line := scanner.Text()
 		if !strings.HasPrefix(line, "NAME") {
@@ -114,31 +103,15 @@ func searchNpm(arg ...string) ([]string, error) {
 			}
 		}
 	}
-	if scanner.Err() != nil {
-		return matches, nil
-	}
-	//	stderr
-	scanner = bufio.NewScanner(stderr)
-	for scanner.Scan() {
-		line := scanner.Text()
-		log.Printf("[npm] stderr: %s", line)
-	}
-	if scanner.Err() != nil {
-		return matches, nil
-	}
-	if err := cmd.Wait(); err != nil {
-		log.Printf("[npm] exit status %d", cmd.ProcessState.Sys())
-		return matches, err
-	}
 	return matches, nil
 }
 
 func (p *NpmProvider) Contains(arg ...string) ([]string, error) {
 	lines, err := p.Search(arg...)
-	matches := []string{}
 	if err != nil {
-		return matches, err
+		return nil, err
 	} else {
+		matches := []string{}
 		for _, found := range lines {
 			if found == arg[0] {
 				log.Printf("[npm] contains: %s", found)
@@ -149,53 +122,36 @@ func (p *NpmProvider) Contains(arg ...string) ([]string, error) {
 	}
 }
 
-func (p *NpmProvider) Install(arg ...string) ([]string, error) {
-	cmd := exec.Command("npm", append([]string{"--no-color", "install"}, arg...)...)
-	log.Printf("execute: %v", cmd.Args)
-	lines := []string{}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return lines, err
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return lines, err
-	}
+func (p *NpmProvider) Install(arg ...string) error {
+	cmd := cmd.Command("npm", append([]string{"--no-color", "install"}, arg...)...)
 	if err := cmd.Start(); err != nil {
-		return lines, err
+		return err
 	}
-	//	stdout
-	scanner := bufio.NewScanner(stdout)
+	defer cmd.Wait()
+	scanner := cmd.Scanner()
 	for scanner.Scan() {
-		line := scanner.Text()
-		log.Printf("[npm] %s", line)
-		lines = append(lines, line)
+		log.Printf("[npm] %s", scanner.Text())
+		if err := scanner.Err(); err != nil {
+			return err
+		}
 	}
-	if scanner.Err() != nil {
-		return lines, nil
-	}
-	//	stderr
-	scanner = bufio.NewScanner(stderr)
-	for scanner.Scan() {
-		line := scanner.Text()
-		log.Printf("[npm][stderr] %s", line)
-	}
-	if scanner.Err() != nil {
-		return lines, nil
-	}
-	if err := cmd.Wait(); err != nil {
-		log.Printf("exit status %d", cmd.ProcessState.Sys())
-		return lines, err
-	}
-	return lines, nil
+	return nil
 }
 
 func (p *NpmProvider) getCache() (string, error) {
-	cmd := exec.Command("npm", "--no-color", "config", "get", "cache")
-	log.Printf("execute: %v", cmd.Args)
-	out, err := cmd.CombinedOutput()
-	outStr := string(out)
-	outStr = strings.Trim(outStr, "\n\r")
-	log.Printf("[npm] cache [%s]\n", outStr)
-	return outStr, err
+	cmd := cmd.Command("npm", "--no-color", "config", "get", "cache")
+	if err := cmd.Start(); err != nil {
+		return "", err
+	}
+	defer cmd.Wait()
+	scanner := cmd.Scanner()
+	if scanner.Scan() {
+		path := strings.Trim(scanner.Text(), "\n\r")
+		log.Printf("[npm] %s", path)
+		return path, nil
+	}
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+	return "", os.ErrNotExist
 }

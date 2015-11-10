@@ -1,9 +1,8 @@
 package brew
 
 import (
-	"bufio"
+	"github.com/mitallast/please/cmd"
 	"log"
-	"os/exec"
 	"strings"
 )
 
@@ -11,8 +10,7 @@ type BrewProvider struct {
 }
 
 func Supports() bool {
-	_, err := exec.LookPath("brew")
-	return err == nil
+	return cmd.LookPath("brew")
 }
 
 func NewProvider() *BrewProvider {
@@ -20,45 +18,20 @@ func NewProvider() *BrewProvider {
 }
 
 func (p *BrewProvider) Search(arg ...string) ([]string, error) {
-	cmd := exec.Command("brew", append([]string{"search"}, arg...)...)
-	log.Printf("execute: %v", cmd.Args)
-	lines := []string{}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return lines, err
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return lines, err
-	}
+	cmd := cmd.Command("brew", append([]string{"search"}, arg...)...)
 	if err := cmd.Start(); err != nil {
-		return lines, err
+		return nil, err
 	}
-	//	stdout
-	scanner := bufio.NewScanner(stdout)
+	defer cmd.Wait()
+	matches := []string{}
+	scanner := cmd.Scanner()
 	for scanner.Scan() {
 		line := scanner.Text()
 		line = strings.Replace(line, " (installed)", "", -1)
 		log.Printf("[brew] %s", line)
-		lines = append(lines, line)
+		matches = append(matches, line)
 	}
-	if scanner.Err() != nil {
-		return lines, nil
-	}
-	//	stderr
-	scanner = bufio.NewScanner(stderr)
-	for scanner.Scan() {
-		line := scanner.Text()
-		log.Printf("[brew][stderr] %s", line)
-	}
-	if scanner.Err() != nil {
-		return lines, nil
-	}
-	if err := cmd.Wait(); err != nil {
-		log.Printf("exit status %d", cmd.ProcessState.Sys())
-		return lines, err
-	}
-	return lines, nil
+	return matches, nil
 }
 
 func (p *BrewProvider) Contains(arg ...string) ([]string, error) {
@@ -77,43 +50,18 @@ func (p *BrewProvider) Contains(arg ...string) ([]string, error) {
 	}
 }
 
-func (p *BrewProvider) Install(arg ...string) ([]string, error) {
-	cmd := exec.Command("brew", append([]string{"install"}, arg...)...)
-	log.Printf("execute: %v", cmd.Args)
-	lines := []string{}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return lines, err
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return lines, err
-	}
+func (p *BrewProvider) Install(arg ...string) error {
+	cmd := cmd.Command("brew", append([]string{"install"}, arg...)...)
 	if err := cmd.Start(); err != nil {
-		return lines, err
+		return err
 	}
-	//	stdout
-	scanner := bufio.NewScanner(stdout)
+	defer cmd.Wait()
+	scanner := cmd.Scanner()
 	for scanner.Scan() {
-		line := scanner.Text()
-		log.Printf("[brew] %s", line)
-		lines = append(lines, line)
+		log.Printf("[brew] %s", scanner.Text())
+		if err := scanner.Err(); err != nil {
+			return err
+		}
 	}
-	if scanner.Err() != nil {
-		return lines, nil
-	}
-	//	stderr
-	scanner = bufio.NewScanner(stderr)
-	for scanner.Scan() {
-		line := scanner.Text()
-		log.Printf("[brew][stderr] %s", line)
-	}
-	if scanner.Err() != nil {
-		return lines, nil
-	}
-	if err := cmd.Wait(); err != nil {
-		log.Printf("exit status %d", cmd.ProcessState.Sys())
-		return lines, err
-	}
-	return lines, nil
+	return nil
 }

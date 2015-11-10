@@ -88,12 +88,8 @@ func install(c *cli.Context) {
 		log.Printf("contains: %s", contains)
 		if len(contains) > 0 {
 			packages = excludePackages(packages, contains)
-			lines, err := provider.Install(contains...)
-			if err != nil {
+			if err := provider.Install(contains...); err != nil {
 				log.Fatal(err)
-			}
-			for _, found := range lines {
-				log.Printf("install: %s", found)
 			}
 		}
 		if len(packages) == 0 {

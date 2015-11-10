@@ -5,5 +5,5 @@ type Provider interface {
 
 	Contains(arg ...string) ([]string, error)
 
-	Install(arg ...string) ([]string, error)
+	Install(arg ...string) error
 }

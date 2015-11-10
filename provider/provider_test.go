@@ -23,9 +23,9 @@ func (p *MockProvider) Contains(arg ...string) ([]string, error) {
 	return args.Get(0).([]string), args.Error(1)
 }
 
-func (p *MockProvider) Install(arg ...string) ([]string, error) {
+func (p *MockProvider) Install(arg ...string) error {
 	args := p.Called(arg)
-	return args.Get(0).([]string), args.Error(1)
+	return args.Error(0)
 }
 
 func TestSearch(t *testing.T) {
@@ -52,11 +52,11 @@ func TestContains(t *testing.T) {
 
 func TestInstall(t *testing.T) {
 	provider := NewMockProvider()
-	provider.Mock.On("Install", []string{"vim"}).Return([]string{}, nil)
-	lines, err := provider.Install("vim")
+	provider.Mock.On("Install", []string{"vim"}).Return(nil)
+	err := provider.Install("vim")
 	if err != nil {
 		t.Fatal(err)
 	} else {
-		t.Logf("install: %s", lines)
+		t.Logf("installed")
 	}
 }

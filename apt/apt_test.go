@@ -43,10 +43,10 @@ func TestInstall(t *testing.T) {
 		t.Skip("apt not supports")
 	}
 	provider := NewProvider()
-	lines, err := provider.Install("python")
+	err := provider.Install("python")
 	if err != nil {
 		t.Fatal(err)
 	} else {
-		t.Logf("install: %s", lines)
+		t.Logf("installed")
 	}
 }
