@@ -11,6 +11,7 @@ Supported package managers
 ==========================
 
 - homebrew
+- apt
 - npm
 
 How to build
