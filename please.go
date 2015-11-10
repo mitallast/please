@@ -40,10 +40,10 @@ func main() {
 func providers() []provider.Provider {
 	providers := []provider.Provider{}
 	if brew.Supports() {
-		providers = append(providers, brew.NewBrewProvider())
+		providers = append(providers, brew.NewProvider())
 	}
 	if npm.Supports() {
-		providers = append(providers, npm.NewNpmProvider())
+		providers = append(providers, npm.NewProvider())
 	}
 	return providers
 }

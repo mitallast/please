@@ -16,7 +16,7 @@ func TestSearch(t *testing.T) {
 	if !Supports() {
 		t.Skip("brew not supports")
 	}
-	provider := NewBrewProvider()
+	provider := NewProvider()
 	lines, err := provider.Search("python")
 	if err != nil {
 		t.Fatal(err)
@@ -29,7 +29,7 @@ func TestContains(t *testing.T) {
 	if !Supports() {
 		t.Skip("brew not supports")
 	}
-	provider := NewBrewProvider()
+	provider := NewProvider()
 	contains, err := provider.Contains("python")
 	if err != nil {
 		t.Fatal(err)
@@ -42,7 +42,7 @@ func TestInstall(t *testing.T) {
 	if !Supports() {
 		t.Skip("brew not supports")
 	}
-	provider := NewBrewProvider()
+	provider := NewProvider()
 	lines, err := provider.Install("python")
 	if err != nil {
 		t.Fatal(err)

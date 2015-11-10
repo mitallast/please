@@ -15,7 +15,7 @@ func Supports() bool {
 	return err == nil
 }
 
-func NewBrewProvider() *BrewProvider {
+func NewProvider() *BrewProvider {
 	return &BrewProvider{}
 }
 

@@ -23,7 +23,7 @@ func Supports() bool {
 	return err == nil
 }
 
-func NewNpmProvider() *NpmProvider {
+func NewProvider() *NpmProvider {
 	return &NpmProvider{}
 }
 

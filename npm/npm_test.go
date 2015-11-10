@@ -16,7 +16,7 @@ func TestSearch(t *testing.T) {
 	if !Supports() {
 		t.Skip("npm not supports")
 	}
-	provider := NewNpmProvider()
+	provider := NewProvider()
 	lines, err := provider.Search("jquery-sortable")
 	if err != nil {
 		t.Fatal(err)
@@ -29,7 +29,7 @@ func TestContains(t *testing.T) {
 	if !Supports() {
 		t.Skip("npm not supports")
 	}
-	provider := NewNpmProvider()
+	provider := NewProvider()
 	contains, err := provider.Contains("jquery-sortable")
 	if err != nil {
 		t.Fatal(err)
@@ -42,7 +42,7 @@ func testInstall(t *testing.T) {
 	if !Supports() {
 		t.Skip("npm not supports")
 	}
-	provider := NewNpmProvider()
+	provider := NewProvider()
 	lines, err := provider.Install("jquery-sortable")
 	if err != nil {
 		t.Fatal(err)
