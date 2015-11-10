@@ -4,9 +4,20 @@ import (
 	"testing"
 )
 
+func TestSupports(t *testing.T) {
+	if Supports() {
+		t.Log("npm supports")
+	} else {
+		t.Skip("npm not supports")
+	}
+}
+
 func TestSearch(t *testing.T) {
+	if !Supports() {
+		t.Skip("npm not supports")
+	}
 	provider := NewNpmProvider()
-	lines, err := provider.Search("jquery")
+	lines, err := provider.Search("jquery-sortable")
 	if err != nil {
 		t.Fatal(err)
 	} else {
@@ -15,8 +26,11 @@ func TestSearch(t *testing.T) {
 }
 
 func TestContains(t *testing.T) {
+	if !Supports() {
+		t.Skip("npm not supports")
+	}
 	provider := NewNpmProvider()
-	contains, err := provider.Contains("jquery")
+	contains, err := provider.Contains("jquery-sortable")
 	if err != nil {
 		t.Fatal(err)
 	} else {
@@ -25,8 +39,11 @@ func TestContains(t *testing.T) {
 }
 
 func testInstall(t *testing.T) {
+	if !Supports() {
+		t.Skip("npm not supports")
+	}
 	provider := NewNpmProvider()
-	lines, err := provider.Install("jquery")
+	lines, err := provider.Install("jquery-sortable")
 	if err != nil {
 		t.Fatal(err)
 	} else {
