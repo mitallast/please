@@ -80,7 +80,7 @@ func (p *AptProvider) Contains(arg ...string) ([]string, error) {
 }
 
 func (p *AptProvider) Install(arg ...string) ([]string, error) {
-	cmd := exec.Command("apt-get", append([]string{"install", "-y"}, arg...)...)
+	cmd := exec.Command("sudo", append([]string{"apt-get", "install", "-y"}, arg...)...)
 	log.Printf("execute: %v", cmd.Args)
 	lines := []string{}
 	stdout, err := cmd.StdoutPipe()

@@ -1,4 +1,6 @@
 language: go
+sudo: required
+
 os:
   - linux
   - osx
@@ -7,6 +9,5 @@ go:
   - 1.5.1
 
 script:
-  - brew install npm
   - npm search travis-ci
   - go test -v ./...
