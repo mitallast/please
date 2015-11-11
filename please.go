@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/codegangsta/cli"
 	"github.com/mitallast/please/apt"
+	"github.com/mitallast/please/yum"
 	"github.com/mitallast/please/brew"
 	"github.com/mitallast/please/npm"
 	"github.com/mitallast/please/provider"
@@ -45,6 +46,9 @@ func providers() []provider.Provider {
 	}
 	if apt.Supports() {
 		providers = append(providers, apt.NewProvider())
+	}
+	if yum.Supports() {
+		providers = append(providers, yum.NewProvider())
 	}
 	if npm.Supports() {
 		providers = append(providers, npm.NewProvider())
