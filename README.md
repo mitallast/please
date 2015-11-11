@@ -10,9 +10,10 @@ See more at https://mitallast.github.io/please/
 Supported package managers
 ==========================
 
-- homebrew
-- apt
-- npm
+- `homebrew` - for os x and linux
+- `apt` - for apt based linux like debuan, ubuntu 
+- `yum` - for yum based linux like centos, fedora
+- `npm` - cross platform node.js package manager
 
 How to build
 ============
@@ -33,7 +34,9 @@ Warning: python-2.7.10_2 already installed
 How to contribute
 =================
 
-before push changes to master branch, use rebase to avoid merges!
+Before commit changes, use standard tool go fmt.
+
+Before push changes to master branch, use rebase to avoid merges!
 example:
 
 ```sh
